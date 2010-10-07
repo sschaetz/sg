@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+	<title>unittests</title>
+
+  <script src="../app/config.js"></script>
+	<script src="../app/prototype.js"></script>
+  <script src="../app/sjcl.js"></script> 
+  <script src="../app/clientdata.js"></script>
+  <script src="../app/crypto.js"></script> 
+  <script src="unit.js"></script>
+	
+	<script>
+
+    // helper functions
+    // _________________________________________________________________________
+
+    function helper_generate_simple_data_alice()
+    {
+      var d = new Clientdata();
+      d.url          = 'http://localhost/dev/sg/usr/alice/';
+      return d;
+    }
+
+    function helper_generate_simple_data_bob()
+    {   
+      var d = new Clientdata();
+      d.url          = 'http://localhost/dev/sg/usr/bob/';
+      return d;
+    }
+    
+    
+    function helper_alice_pswd()
+    {
+      return 'th1s!s_m7s8pErs3cr3tp4ssw0rd';
+    }
+
+    function helper_bob_pswd()
+    {
+      return 'sd$sf^Z^l3%20k%%0wekc12Ff#j^4035';
+    }
+
+    function logout_user(user)
+    {
+      new Ajax.Request('../usr/' + user + '/?do=logout', 
+      {
+        method: 'get',
+        asynchronous: false,
+        onSuccess: function(transport) 
+        {
+          var response = transport.responseText.evalJSON();
+          test_equal(response.status, 0, 'could not log out properly');
+        }
+      });
+    }
+    
+
+    /**
+     * A function to generate random strings based on Math.random()
+     * Should probably be replaces by something "more random" (e.g. sjcl.random)
+     */
+    function bad_random(string_length)
+    {
+	    var chars = 
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	    var randomstring = '';
+	    for (var i=0; i<string_length; i++) 
+      {
+		    var rnum = Math.floor(Math.random() * chars.length);
+		    randomstring += chars.substring(rnum,rnum+1);
+      }
+      return randomstring;
+    }
+
+
+    // _________________________________________________________________________
+
+
+    tc("SHA Hash function test", function()
+      {
+        var pass = "EpngFxmSIYI4kIB6Hlzd";
+        var hash = 
+          "03c866d2d7e71ddc1f4cb308efbfb533c93d7c4a77a6bf8237625287a2907a1d";
+        // the hash is precalculated in php:
+        // echo hash('sha256', 'EpngFxmSIYI4kIB6Hlzd');
+        var hashb64 = calculate_sha256(pass);
+        test_equal(hashb64, hash, 'could not calculate correct hash');  
+      }
+    );
+
+
+    tc("Encryption and decryption test", function()
+      {
+        d = helper_generate_simple_data_alice();
+        var encryptionkey = calculate_encryption_key('stupidkeywhatcanyoudo', 
+          'thesaltisnotsmartereither');
+        var denc = encrypt_block(encryptionkey, d);
+        var ddec = decrypt_block(encryptionkey, denc);
+        test_equal(Object.toJSON(d), Object.toJSON(ddec), 
+          'en- and decrypted object is not the same as original object');
+      }
+    );
+
+  
+    tc("Reset installation", function()
+      {
+        new Ajax.Request('../php/reset.php', {
+          method: 'get',
+          asynchronous: false,
+          onSuccess: function(transport) {
+            var response = transport.responseText.evalJSON();
+            test_equal(response.status, 0, 'could not reset installation');  
+          }
+        });
+      }, true
+    );    
+
+
+    tc("Installation Alice", function()
+      {
+        // generate salts
+        var encrsalt = bad_random(24);
+        var pswdsalt = bad_random(24);
+        var pswd = helper_alice_pswd();
+        
+        // from the password we generate the access key
+        var key = calculate_sha256(pswd + pswdsalt);
+
+        var urlappend = "&key=" + key + "&encrsalt=" + encrsalt + 
+          "&pswdsalt=" + pswdsalt;
+        new Ajax.Request('../php/install.php?url=alice' + urlappend, 
+        {
+          method: 'get',
+          asynchronous: false,
+          onSuccess: function(transport) 
+          {
+            var response = transport.responseText.evalJSON();
+            test_equal(response.status, 0, 'could not install alice');  
+          }
+        });
+      }
+    );
+    
+
+    tc("Initialize Clientdata", function()
+      {
+        var d = new Clientdata;
+        test_equal(d.url, unset_value, 'initial client data wrong');
+        d.username = 'test';
+        test_equal(d.username, 'test', 'could not set username in client data');
+      }
+    );
+
+
+    tc("Login test", function()
+      {
+        // get the pswdsalt
+        var pswdsalt;
+        new Ajax.Request('../usr/alice/?json=1', 
+        {
+          method: 'get',
+          asynchronous: false,
+          onSuccess: function(transport) 
+          {
+            var response = transport.responseText.evalJSON();
+            test_equal(response.status, 0, 'could not access json login');  
+            pswdsalt = response.pswdsalt;
+          }
+        });
+
+        // calcualte key
+        var pswd = helper_alice_pswd();
+        var key = calculate_sha256(pswd + pswdsalt);
+        
+        // log in
+        var data;
+        var encrsalt;
+        new Ajax.Request('../usr/alice/?key=' + key, 
+        {
+          method: 'get',
+          asynchronous: false,
+          onSuccess: function(transport) 
+          {
+            var response = transport.responseText.evalJSON();
+            test_equal(response.data, '', 'could not access private page');
+            data = response.data;
+            encrsalt = response.encrsalt;
+          }
+        });
+
+        // log out
+        logout_user('alice');
+      }
+    );
+
+    
+    tc("Upload data test", function()
+        {
+          // get the pswdsalt
+          var pswdsalt;
+          new Ajax.Request('../usr/alice/?json=1', 
+          {
+            method: 'get',
+            asynchronous: false,
+            onSuccess: function(transport) 
+            {
+              var response = transport.responseText.evalJSON();
+              test_equal(response.status, 0, 'could not access json login');  
+              pswdsalt = response.pswdsalt;
+            }
+          });
+
+          // calcualte key
+          var pswd = helper_alice_pswd();
+          var key = calculate_sha256(pswd + pswdsalt);
+          
+          // log in
+          var data;
+          var encrsalt;
+          new Ajax.Request('../usr/alice/?key=' + key, 
+          {
+            method: 'get',
+            asynchronous: false,
+            onSuccess: function(transport) 
+            {
+              var response = transport.responseText.evalJSON();
+              test_equal(response.data, '', 'could not access private page');
+              data = response.data;
+              encrsalt = response.encrsalt;
+            }
+          });
+
+          // encrypt data and upload
+          var d = helper_generate_simple_data_alice();
+          var encryptionkey = 
+            calculate_encryption_key(helper_alice_pswd(), encrsalt);
+          var denc = encrypt_block(encryptionkey, d);
+          
+          new Ajax.Request('../usr/alice/?do=save&json=1&data=' + denc, 
+          {
+            method: 'get',
+            asynchronous: false,
+            onSuccess: function(transport) 
+            {
+              var response = transport.responseText.evalJSON();
+              test_equal(response.status, 0, 'could not save data block');
+            }
+          });
+          
+          // log out
+          logout_user('alice');     
+        }
+      );
+    
+	</script>
+
+</head>
+	<body onload="sjcl.random.startCollectors(); javascript:runtests();">
+    
+
+	</body>
+</html>
+

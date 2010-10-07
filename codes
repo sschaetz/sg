@@ -1,0 +1,31 @@
+ No | Description
+================================================================================
+  0 | No problem, everything ok
+  1 | Installation: malformed URL specified (only alphanumericals allowed)
+  2 | Installation: URL already exists on this server
+  3 | Installation: malformed key specified (only alphanumericals allowed)
+  4 | Installation: malformed encrsalt specified (only alphanumericals allowed)
+  5 | Installation: malformed pswdsalt specified (only alphanumericals allowed)
+  
+  
+  
+ 10 | Called backend function that does not exist
+ 11 | Trying to save but no data provided
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>0, <99 : error
+1XX     : notice
+
