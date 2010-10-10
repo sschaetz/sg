@@ -43,7 +43,7 @@
 
     function logout_user(user)
     {
-      new Ajax.Request('../usr/' + user + '/?do=logout', 
+      new Ajax.Request('../usr/' + user + '/?do=logout&json=1', 
       {
         method: 'get',
         asynchronous: false,
@@ -226,7 +226,7 @@
             {
               var response = transport.responseText.evalJSON();
               test_equal(response.data, '', 'could not access private page');
-              data = response.data;
+              test_equal(response.status, 0, 'could not access private page');
               encrsalt = response.encrsalt;
             }
           });
@@ -237,9 +237,10 @@
             calculate_encryption_key(helper_alice_pswd(), encrsalt);
           var denc = encrypt_block(encryptionkey, d);
           
-          new Ajax.Request('../usr/alice/?do=save&json=1&data=' + denc, 
+          new Ajax.Request('../usr/alice/?do=save&json=1&key=' + key, 
           {
-            method: 'get',
+            method: 'post',
+            parameters: { data: denc },
             asynchronous: false,
             onSuccess: function(transport) 
             {
@@ -247,6 +248,58 @@
               test_equal(response.status, 0, 'could not save data block');
             }
           });
+          
+          // log out
+          logout_user('alice');     
+        }
+      );
+
+    
+    tc("Receive data test", function()
+        {
+          // get the pswdsalt
+          var pswdsalt;
+          new Ajax.Request('../usr/alice/?json=1', 
+          {
+            method: 'get',
+            asynchronous: false,
+            onSuccess: function(transport) 
+            {
+              var response = transport.responseText.evalJSON();
+              test_equal(response.status, 0, 'could not access json login');  
+              pswdsalt = response.pswdsalt;
+            }
+          });
+
+          // calcualte key
+          var pswd = helper_alice_pswd();
+          var key = calculate_sha256(pswd + pswdsalt);
+          
+          // log in
+          var data;
+          var encrsalt;
+          new Ajax.Request('../usr/alice/?key=' + key, 
+          {
+            method: 'get',
+            asynchronous: false,
+            onSuccess: function(transport) 
+            {
+              var response = transport.responseText.evalJSON();
+              data = response.data;
+              encrsalt = response.encrsalt;
+            }
+          });
+
+          // decrypt data and compare it
+          var d = helper_generate_simple_data_alice();
+          
+          var encryptionkey = 
+            calculate_encryption_key(helper_alice_pswd(), encrsalt);
+          var ddec = decrypt_block(encryptionkey, data);
+          
+          test_equal(Object.toJSON(ddec), Object.toJSON(d), 
+              'received and decrypted object is not' +
+              ' the same as original object');
           
           // log out
           logout_user('alice');     

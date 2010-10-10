@@ -88,11 +88,11 @@
   
   function save_loggedin($db, $session)
   {
-    if(!isset($_GET['data']))                            // check if data is set
+    if(!isset($_POST['data']))                           // check if data is set
     {
        die_status(11);
     }
-    $db->updateValue('data', $_GET['data']);
+    $db->updateValue('data', $_POST['data']);
     die_status('0');
   }
   

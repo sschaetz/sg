@@ -6,9 +6,9 @@
     private $loggedIn;
 
     public function __construct($db)
-		{                                        
+		{                
+		  session_start();                       
       $this->loggedIn = false;
-      session_start();
       $key = '';
                                                            // get the input data 
       if(isset($_GET['key']))
@@ -40,7 +40,11 @@
 
     public function destroy()
     {
-      session_destroy();
+      if($this->loggedIn)
+      {
+        session_destroy();
+      }
+      return;
     }
 
 	}
