@@ -49,8 +49,10 @@
     def_loggedin($db, $session);
   }
 
+  
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
+  
   function logout($db, $session)
   {
     $session->destroy();
@@ -76,14 +78,15 @@
  
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
+  
   function save($db, $session)
   {
-    die('nope save');
+    die_status(12);
   }
   
   function save_html($db, $session)
   {
-    die('nope save_html');
+    die('Error, status 12');
   }
   
   function save_loggedin($db, $session)
@@ -98,8 +101,33 @@
   
   function save_html_loggedin($db, $session)
   {
-    die('nope save_html_loggedin');
+    die('Error, status 12');
   }
+   
+ 
+  //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
+
+  
+  function addaccess($db, $session)
+  {
+    die_status(13);
+  }
+  
+  function addaccess_html($db, $session)
+  {
+    die('Error, status 13');
+  }
+  
+  function addaccess_loggedin($db, $session)
+  {
+
+  }
+  
+  function addaccess_html_loggedin($db, $session)
+  {
+    die('Error, status 13');
+  }
+  
   
   // ___________________________________________________________________________
 

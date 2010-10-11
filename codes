@@ -11,6 +11,8 @@
   
  10 | Called backend function that does not exist
  11 | Trying to save but no data provided
+ 12 | Saving data not possible
+ 13 | Addaccess not possible
 
 
 
