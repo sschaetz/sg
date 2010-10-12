@@ -108,22 +108,51 @@
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
   
-  function addaccess($db, $session)
+  function sendinvite($db, $session)
   {
     die_status(13);
   }
   
-  function addaccess_html($db, $session)
+  function sendinvite_html($db, $session)
   {
     die('Error, status 13');
   }
   
-  function addaccess_loggedin($db, $session)
+  function sendinvite_loggedin($db, $session)
   {
-
+                                                                // validate data
+    $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+    $accesskey = filter_var($_POST['accesskey'], FILTER_VALIDATE_INT, 
+      FILTER_FLAG_ALLOW_HEX);
+    $encryptkey = filter_var($_POST['encryptkey'], FILTER_VALIDATE_INT);
+    $url = filter_var($_POST['url'], FILTER_VALIDATE_URL);
+    $message = filter_var($_POST['message'], FILTER_SANITIZE_STRING);
+    if(!$id || !$accesskey || !$encryptkey || !$url || !$message)
+    {
+      die_status(13);
+    }
+    
+             // add access key to friends table to allow remote to send messages
+    $data = array('id' => $id, 'accesskey' => $accesskey, 'status' => 1);
+    $db->insertRow('friends', $data);
+    
+                                           // send the invite to the remote user
+    $ch = curl_init();   
+    curl_setopt($ch, CURLOPT_URL, $url . '?do=receiveinvite'); 
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, 'accesskey=' . $accesskey . 
+      '&encryptkey=' . $encryptkey . '&message=' . $message);
+    curl_exec($ch);    
+    $ret = json_decode(curl_close($ch));
+    if($ret->status != 0)
+    {
+      throw new Exception("Could not send the invite to the remote user.");
+    }
+    die_status(0);
   }
   
-  function addaccess_html_loggedin($db, $session)
+  function sendinvite_html_loggedin($db, $session)
   {
     die('Error, status 13');
   }

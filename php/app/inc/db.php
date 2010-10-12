@@ -81,6 +81,24 @@
       }
       return true;
     }
+    
+    function insertRow($table, $data)
+    {
+      $fields = array_shift(array_keys($data));
+      $values = "'" . $this->escapeString($data[$fields]) . "'";
+      foreach($data as $key => $value)
+      {
+        $fields .= ', '. $key;
+        $values .= ", '". $this->escapeString($value) . "'";
+      }
+      $query = $this->exec("INSERT INTO " . $table . "(" . $fields . 
+        ") VALUES (" . $values . ")");
+      if (!$query || $this->changes() != 1) 
+      {
+        throw new Exception("Could not insert row into table $table.");
+      }
+      return true;
+    }
 
 	}
 

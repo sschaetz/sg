@@ -22,10 +22,10 @@ function Clientdata_friend()
   this.sharedsecret = unset_value;
   this.localsecret  = unset_value;
   /* status of friends: -1 = notset, 0 = sent invite, 1 = friends, 
-      2 = sent invite but declined, 3 = received invite but declined */
+      2 = sent invite but declined, 3 = received invite but declined 
+      4 = ignoring */
   this.status       = -1;
 }
-
 
 function Clientdata()
 {

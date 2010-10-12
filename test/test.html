@@ -258,6 +258,7 @@
       }
     );
 
+    
     tc("Installation and upload data bob", function()
       {
         // generate salts
@@ -307,6 +308,38 @@
       }
     );
 
+
+    tc("Add access to Alice for Bob and to Bob for Alice", function()
+      { 
+        // _______________________________________________________________ ALICE
+        {
+          // log in
+          var ret = login_user('alice', helper_alice_pswd());
+          
+          // get data
+          var encryptionkey = 
+            calculate_encryption_key(helper_alice_pswd(), ret[1]);
+          var ddec = decrypt_block(encryptionkey, ret[0]);
+          
+          // log out
+          logout_user('alice');  
+        }
+
+        // _________________________________________________________________ BOB
+        {
+          // log in
+          var ret = login_user('bob', helper_alice_pswd());
+          
+          // get data
+          var encryptionkey = 
+            calculate_encryption_key(helper_alice_pswd(), ret[1]);
+          var ddec = decrypt_block(encryptionkey, ret[0]);
+          
+          // log out
+          logout_user('bob');  
+        }
+      }
+    );
 
 	</script>
 
