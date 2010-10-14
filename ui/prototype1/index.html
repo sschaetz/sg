@@ -89,6 +89,12 @@
           font-size: 12px;
           list-style-type: none;
           font-weight: bold;
+          cursor: pointer;
+        }
+        
+        #friendlist li:hover
+        {
+          background-color: #D2D9B8;
         }
         
         #friendlist .invite
@@ -96,9 +102,14 @@
           background: #F0F1F2 url(../icons/user_go.png) 2px 2px no-repeat;
         }
         
-        #friendlist .normal
+        #friendlist .normalm
         {
-          background: #F0F1F2 url(../icons/user_red.png) 2px 2px no-repeat;
+          background: #F0F1F2 url(../icons/user_suit.png) 2px 2px no-repeat;
+        }
+        
+        #friendlist .normalf
+        {
+          background: #F0F1F2 url(../icons/user_female.png) 2px 2px no-repeat;
         }
         
         #friendlist .ignore
@@ -123,6 +134,12 @@
           list-style-type: none;
           font-weight: bold;
           height: 30px;
+          cursor: pointer;
+        }
+        
+        #messagelist li:hover
+        {
+          background-color: #D2D9B8;
         }
         
         #messagelist .invite
@@ -189,9 +206,10 @@
 
     <div id="friendlistcontainer" class="layoutcolumns">
       <ul id="friendlist">
-        <li class="normal">Alice</li>
+        <li class="normalf">Alice</li>
         <li class="invite">Bob</li>
         <li class="ignore">Carol</li>
+        <li class="normalm">Gordon</li>
       </ul> 
     </div>
     
