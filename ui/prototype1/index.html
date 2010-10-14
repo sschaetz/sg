@@ -4,13 +4,18 @@
 
 
 <title>Test</title>
-<!-- colors from http://kuler.adobe.com/#create/fromacolor 
+<!-- 
+
+  colors from http://kuler.adobe.com/#create/fromacolor 
 
   bright: #F0F1F2
   dark: #232625 modified #383D3C modified #656566
   extrem highlight: #FF5629
   bright highlight: #D2D9B8
   dark highlight: #647362
+  
+  at some point we should replace the scrollbars with jscrollpane
+  http://jscrollpane.kelvinluck.com/
 
 -->
 <style>
@@ -69,9 +74,7 @@
       width: 500px;
     }
 
-      .padcontainer
-      {
-      }
+/* __________________________________________________________________________ */
 
       #friendlist
       {
@@ -79,14 +82,31 @@
       
         #friendlist li
         {
-          background-color: #F0F1F2;
           border: 1px solid #656566;
           color: #656566;
           margin: 2px 4px 2px 4px;
-          padding: 2px 4px 2px 4px;
+          padding: 2px 4px 2px 25px;
           font-size: 12px;
           list-style-type: none;
+          font-weight: bold;
         }
+        
+        #friendlist .invite
+        {
+          background: #F0F1F2 url(../icons/user_go.png) 2px 2px no-repeat;
+        }
+        
+        #friendlist .normal
+        {
+          background: #F0F1F2 url(../icons/user_red.png) 2px 2px no-repeat;
+        }
+        
+        #friendlist .ignore
+        {
+          background: #F0F1F2 url(../icons/user_delete.png) 2px 2px no-repeat;
+        }
+
+/* __________________________________________________________________________ */
 
       #messagelist
       {
@@ -98,10 +118,48 @@
           border: 1px solid #656566;
           color: #656566;
           margin: 2px 4px 2px 4px;
-          padding: 2px 4px 2px 4px;
+          padding: 2px 4px 2px 25px;
           font-size: 12px;
           list-style-type: none;
+          font-weight: bold;
+          height: 30px;
         }
+        
+        #messagelist .invite
+        {
+          background: #F0F1F2 url(../icons/email_go.png) 2px 2px no-repeat;
+        }
+        
+        #messagelist .normal
+        {
+          background: #F0F1F2 url(../icons/email.png) 2px 2px no-repeat;
+        }
+        
+        #messagelist .date
+        {
+          float: right; 
+          font-weight: normal;
+        }
+         
+        #messagelist .normal .subjectnew
+        {
+          font-size: 10px;
+        }
+               
+        #messagelist .normal .subject
+        {
+          font-weight: normal; 
+          font-size: 10px;
+        }
+               
+        #messagelist .invite .subject
+        {
+          font-size: 10px;
+          color: #FF5629;
+        }
+        
+/* __________________________________________________________________________ */
+        
 
 </style>
 
@@ -131,107 +189,34 @@
 
     <div id="friendlistcontainer" class="layoutcolumns">
       <ul id="friendlist">
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
+        <li class="normal">Alice</li>
+        <li class="invite">Bob</li>
+        <li class="ignore">Carol</li>
       </ul> 
     </div>
     
     <div id="messagelistcontainer" class="layoutcolumns">
       <ul id="messagelist">
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
-        <li>Coffee</li>
-        <li>Milk</li>
+        <li class="normal">
+          Alice <span class="date">8:34pm 03.05.2010</span><br/>
+          <span class="subjectnew">This is the subject of a new message</span>
+        </li>
+        <li class="normal">
+          Alice <span class="date">5:23pm 03.05.2010</span><br/>
+          <span class="subject">This is the subject of an old message</span>
+        </li>
+        <li class="invite">
+          Dave <span class="date">3:35pm 03.05.2010</span><br/>
+          <span class="subject">This is a new invite</span>
+        </li>
+        <li class="normal">
+          Alice <span class="date">2:23pm 03.05.2010</span><br/>
+          <span class="subject">This is the subject of an old message</span>
+        </li>
+        <li class="normal">
+          Alice <span class="date">1:54pm 03.05.2010</span><br/>
+          <span class="subject">This is the subject of an old message</span>
+        </li>
       </ul> 
     </div>
     
