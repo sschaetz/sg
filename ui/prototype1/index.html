@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=us-ascii" />
+
+
+<title>Test</title>
+<!-- colors from http://kuler.adobe.com/#create/fromacolor 
+
+  bright: #F0F1F2
+  dark: #232625 modified #383D3C modified #656566
+  extrem highlight: #FF5629
+  bright highlight: #D2D9B8
+  dark highlight: #647362
+
+-->
+<style>
+
+  body, html
+  {
+    font-family: sans;
+    color: #383D3C;
+  }
+
+  *
+  {
+    padding: 0 0 0 0; 
+    margin: 0 0 0 0;
+  }
+
+  #header
+  {
+    background-color: #F0F1F2;
+    color: #232625;
+    padding: 4px 4px 4px 4px;
+    height: 25px;
+    padding-left: 5px;
+  }
+
+  #contentcontainer
+  {
+    background-color: #F0F1F2;
+  }
+
+    .layoutcolumns
+    {
+      float: left;
+      border-right: 5px solid #F0F1F2;
+      height: 100%;
+      overflow-y: scroll;
+      overflow-x: hide;
+    }
+
+    #friendlistcontainer
+    {
+      background-color: white;
+      width: 200px;
+      border-left: 5px solid #F0F1F2;
+    }
+
+    #messagelistcontainer
+    {
+      background-color: white;
+      width: 300px;
+    }
+
+    #mainviewportcontainer
+    {
+      background-color: white;
+      width: 500px;
+    }
+
+      .padcontainer
+      {
+      }
+
+      #friendlist
+      {
+      }
+      
+        #friendlist li
+        {
+          background-color: #F0F1F2;
+          border: 1px solid #656566;
+          color: #656566;
+          margin: 2px 4px 2px 4px;
+          padding: 2px 4px 2px 4px;
+          font-size: 12px;
+          list-style-type: none;
+        }
+
+      #messagelist
+      {
+      }
+      
+        #messagelist li
+        {
+          background-color: #F0F1F2;
+          border: 1px solid #656566;
+          color: #656566;
+          margin: 2px 4px 2px 4px;
+          padding: 2px 4px 2px 4px;
+          font-size: 12px;
+          list-style-type: none;
+        }
+
+</style>
+
+<script type="text/javascript" src="jquery.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var viewportHeight = 
+      window.innerHeight ? window.innerHeight : $(window).height();
+    $('#contentcontainer').css({'height':(viewportHeight-35)+'px'});
+    $(window).resize(function(){
+      var viewportHeight = 
+        window.innerHeight ? window.innerHeight : $(window).height();
+      $('#contentcontainer').css({'height':(viewportHeight-35)+'px'});
+    });
+  });
+</script>
+
+
+</head><body>
+
+  <div id="header">
+    <h3>starba.se/<span style="color: rgb(255, 86, 41);">username</span></h3>
+  </div>
+
+  <div id="contentcontainer">
+
+    <div id="friendlistcontainer" class="layoutcolumns">
+      <ul id="friendlist">
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+      </ul> 
+    </div>
+    
+    <div id="messagelistcontainer" class="layoutcolumns">
+      <ul id="messagelist">
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Coffee</li>
+        <li>Milk</li>
+      </ul> 
+    </div>
+    
+    <div id="mainviewportcontainer" class="layoutcolumns">
+    </div>
+
+  </div>
+
+</body></html>
