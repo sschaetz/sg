@@ -108,58 +108,124 @@
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
   
-  function sendinvite($db, $session)
+  function send($db, $session)
   {
     die_status(13);
   }
   
-  function sendinvite_html($db, $session)
+  function send_html($db, $session)
   {
     die('Error, status 13');
   }
-  
-  function sendinvite_loggedin($db, $session)
+
+  /**
+   * action called if local user wants to send a message, messages can be
+   * normal (send a regular encrypted message)
+   * invite (send an invite to another user)
+   * accept (notify another user that an invite was accepted)
+   * 
+   * @param $db
+   * @param $session
+   */
+  function send_loggedin($db, $session)
   {
-                                                                // validate data
-    $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
-    $accesskey = filter_var($_POST['accesskey'], FILTER_VALIDATE_INT, 
-      FILTER_FLAG_ALLOW_HEX);
-    $encryptkey = filter_var($_POST['encryptkey'], FILTER_VALIDATE_INT);
-    $url = filter_var($_POST['url'], FILTER_VALIDATE_URL);
-    $message = filter_var($_POST['message'], FILTER_SANITIZE_STRING);
-    if(!$id || !$accesskey || !$encryptkey || !$url || !$message)
+    // each send command must have a type to specify which message type
+    // should be sent, check if type is set and if it is correct and dispatch
+    // action from there
+    
+    if(isset($_POST['type']) && ctype_alnum($_POST['type']))
     {
-      die_status(13);
+      $type = $_POST['type'];
+      if($type == 0)
+      {
+        send_normal_message($url, $message, $key, $db);
+        return;
+      }
+      else if($type == 1)
+      {
+        send_invite_message($url, $message, $db);
+        return;
+      }
+      else if($type == 2)
+      {
+        send_accept_message($url, $message, $db);
+        return;
+      }
     }
     
-             // add access key to friends table to allow remote to send messages
-    $data = array('id' => $id, 'accesskey' => $accesskey, 'status' => 1);
-    $db->insertRow('friends', $data);
-    
-                                           // send the invite to the remote user
-    $ch = curl_init();   
-    curl_setopt($ch, CURLOPT_URL, $url . '?do=receiveinvite'); 
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, 'accesskey=' . $accesskey . 
-      '&encryptkey=' . $encryptkey . '&message=' . $message);
-    curl_exec($ch);    
-    $ret = json_decode(curl_close($ch));
-    if($ret->status != 0)
-    {
-      throw new Exception("Could not send the invite to the remote user.");
-    }
-    die_status(0);
+    // error
+    die_status(13);
+
   }
   
-  function sendinvite_html_loggedin($db, $session)
+  function send_html_loggedin($db, $session)
   {
     die('Error, status 13');
+  }
+   
+ 
+  //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
+
+  
+  function recv($db, $session)
+  {
+    die_status(1);
+  }
+  
+  function recv_html($db, $session)
+  {
+    die('Error, status 14');
+  }
+
+  /**
+   * action called if remote user wants to deliver a message, messages can be
+   * normal (receive a regular encrypted message)
+   * invite (receive an invite to another user)
+   * accept (receive notification from another user that an invite was accepted)
+   * 
+   * @param $db
+   * @param $session
+   */
+  function recv_loggedin($db, $session)
+  {
+    // each send command must have a type to specify which message type
+    // should be sent, check if type is set and if it is correct and dispatch
+    // action from there
+    
+    if(isset($_POST['type']) && ctype_alnum($_POST['type']))
+    {
+      $type = $_POST['type'];
+      if($type == 0)
+      {
+        recv_normal_message($url, $message, $key, $db);
+        return;
+      }
+      else if($type == 1)
+      {
+        recv_invite_message($url, $message, $db);
+        return;
+      }
+      else if($type == 2)
+      {
+        recv_accept_message($url, $message, $db);
+        return;
+      }
+    }
+    
+    // error
+    die_status(14);
+
+  }
+  
+  function recv_html_loggedin($db, $session)
+  {
+    die('Error, status 14');
   }
   
   
   // ___________________________________________________________________________
-
+  // ___________________________________________________________________________
+  // ___________________________________________________________________________
 
   // the do variable controls the path that should be taken, if it is not set
   // the default value is assigned
@@ -200,7 +266,39 @@
     throw new Exception("Function $functionname does not exist.");
   }
 
+  //dispatch
   call_user_func($functionname, $db, $session);
 
   
-?>
+/*
+                                                               // validate data
+  $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+  $accesskey = filter_var($_POST['accesskey'], FILTER_VALIDATE_INT, 
+    FILTER_FLAG_ALLOW_HEX);
+  $encryptkey = filter_var($_POST['encryptkey'], FILTER_VALIDATE_INT);
+  $url = filter_var($_POST['url'], FILTER_VALIDATE_URL);
+  $message = filter_var($_POST['message'], FILTER_SANITIZE_STRING);
+  if(!$id || !$accesskey || !$encryptkey || !$url || !$message)
+  {
+    die_status(13);
+  }
+  
+           // add access key to friends table to allow remote to send messages
+  $data = array('id' => $id, 'accesskey' => $accesskey, 'status' => 1);
+  $db->insertRow('friends', $data);
+  
+                                         // send the invite to the remote user
+  $ch = curl_init();   
+  curl_setopt($ch, CURLOPT_URL, $url . '?do=receiveinvite'); 
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, 'accesskey=' . $accesskey . 
+    '&encryptkey=' . $encryptkey . '&message=' . $message);
+  curl_exec($ch);    
+  $ret = json_decode(curl_close($ch));
+  if($ret->status != 0)
+  {
+    throw new Exception("Could not send the invite to the remote user.");
+  }
+  die_status(0);
+*/ 

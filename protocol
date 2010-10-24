@@ -1,0 +1,26 @@
+Server function:
+
+for user: ______________________________________________________________________
+
+send message
+ depending on type of message, different actions are taken
+ no | type        | action
+ ===============================================================================
+ 0  | normal      | deliver encrypted message to recipient using key
+ 1  | invite      | deliver invite to recipient (unencrypted) and store key
+    |             | in database to allow user to send messages
+ 2  | accept      | deliver accept to recipient (unencrypted) and store key
+    |             | in database to allow user to send messages
+    
+receive message
+ no | type        | action
+ ===============================================================================
+ 0  | normal      | check if delivery allowed, if yes store message
+ 1  | invite      | notify user of invite
+ 2  | accept      | notify user of accept
+ 
+ 
+ for remote: ___________________________________________________________________
+ 
+ receive message
+ 

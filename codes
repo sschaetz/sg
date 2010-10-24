@@ -12,7 +12,8 @@
  10 | Called backend function that does not exist
  11 | Trying to save but no data provided
  12 | Saving data not possible
- 13 | Sendinvite validation error
+ 13 | Send data validation error
+ 14 | Receive data validation error
 
 
 ________________________________________________________________________________
