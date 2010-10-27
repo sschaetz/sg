@@ -108,18 +108,18 @@
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
   
-  function send($db, $session)
+  function deliver($db, $session)
   {
     die_status(13);
   }
   
-  function send_html($db, $session)
+  function deliver_html($db, $session)
   {
     die('Error, status 13');
   }
 
   /**
-   * action called if local user wants to send a message, messages can be
+   * action called if local user wants to deliver a message, messages can be
    * normal (send a regular encrypted message)
    * invite (send an invite to another user)
    * accept (notify another user that an invite was accepted)
@@ -127,17 +127,34 @@
    * @param $db
    * @param $session
    */
-  function send_loggedin($db, $session)
+  function deliver_loggedin($db, $session)
   {
     // each send command must have a type to specify which message type
     // should be sent, check if type is set and if it is correct and dispatch
     // action from there
     
-    if(isset($_POST['type']) && ctype_alnum($_POST['type']))
+    if(!isset($_POST['url']) || !filter_var($_POST['url'], FILTER_VALIDATE_URL))
+    {
+      die_status(13);
+    }
+    $url = $_POST['url'];
+    
+    if(!isset($_POST['message']))
+    {
+      die_status(13);
+    }
+    $message = $_POST['message'];
+    
+    if(isset($_POST['type']) && ctype_digit ($_POST['type']))
     {
       $type = $_POST['type'];
       if($type == 0)
       {
+        if(!isset($_POST['key']) || !ctype_alnum($_POST['type']))
+        {
+          die_status(13);
+        }
+        $key = $_POST['key'];
         send_normal_message($url, $message, $key, $db);
         return;
       }
@@ -158,7 +175,7 @@
 
   }
   
-  function send_html_loggedin($db, $session)
+  function deliver_html_loggedin($db, $session)
   {
     die('Error, status 13');
   }
@@ -167,16 +184,6 @@
   //  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _
 
   
-  function recv($db, $session)
-  {
-    die_status(1);
-  }
-  
-  function recv_html($db, $session)
-  {
-    die('Error, status 14');
-  }
-
   /**
    * action called if remote user wants to deliver a message, messages can be
    * normal (receive a regular encrypted message)
@@ -186,38 +193,60 @@
    * @param $db
    * @param $session
    */
-  function recv_loggedin($db, $session)
+  function ep($db, $session)
   {
     // each send command must have a type to specify which message type
     // should be sent, check if type is set and if it is correct and dispatch
     // action from there
     
-    if(isset($_POST['type']) && ctype_alnum($_POST['type']))
+    if(!isset($_POST['url']) || !filter_var($_POST['url'], FILTER_VALIDATE_URL))
+    {
+      die_status(14);
+    }
+    $url = $_POST['url'];
+    
+    if(!isset($_POST['message']))
+    {
+      die_status(14);
+    }
+    $message = $_POST['message'];
+    
+    if(isset($_POST['type']) && ctype_digit ($_POST['type']))
     {
       $type = $_POST['type'];
       if($type == 0)
       {
-        recv_normal_message($url, $message, $key, $db);
+        if(!isset($_POST['key']) || !ctype_alnum($_POST['type']))
+        {
+          die_status(14);
+        }
+        $key = $_POST['key'];
+        $ret = deliver($url, 'type=' . $type . "&message=" . $message . 
+          "&key=" . $key);
         return;
       }
-      else if($type == 1)
+      else if($type == 1 || $type == 2)
       {
-        recv_invite_message($url, $message, $db);
-        return;
-      }
-      else if($type == 2)
-      {
-        recv_accept_message($url, $message, $db);
+        $ret = deliver($url, 'type=' . $type . "&message=" . $message);
         return;
       }
     }
     
     // error
     die_status(14);
-
   }
   
-  function recv_html_loggedin($db, $session)
+  function ep_html($db, $session)
+  {
+    die('Error, status 14');
+  }
+
+  function ep_loggedin($db, $session)
+  {
+    die_status(14);
+  }
+  
+  function ep_html_loggedin($db, $session)
   {
     die('Error, status 14');
   }
