@@ -132,8 +132,8 @@
     // each send command must have a type to specify which message type
     // should be sent, check if type is set and if it is correct and dispatch
     // action from there
-    
-    if(!isset($_POST['url']) || !filter_var($_POST['url'], FILTER_VALIDATE_URL))
+
+   if(!isset($_POST['url']) || !filter_var($_POST['url'], FILTER_VALIDATE_URL))
     {
       die_status(13);
     }
@@ -155,24 +155,19 @@
           die_status(13);
         }
         $key = $_POST['key'];
-        send_normal_message($url, $message, $key, $db);
+        $ret = deliver($url, 'type=' . $type . "&message=" . $message . 
+          "&key=" . $key);
         return;
       }
-      else if($type == 1)
+      else if($type == 1 || $type == 2)
       {
-        send_invite_message($url, $message, $db);
-        return;
-      }
-      else if($type == 2)
-      {
-        send_accept_message($url, $message, $db);
+        $ret = deliver($url, 'type=' . $type . "&message=" . $message);
         return;
       }
     }
     
     // error
     die_status(13);
-
   }
   
   function deliver_html_loggedin($db, $session)
@@ -220,18 +215,25 @@
         {
           die_status(14);
         }
-        $key = $_POST['key'];
-        $ret = deliver($url, 'type=' . $type . "&message=" . $message . 
-          "&key=" . $key);
+        // check if key is ok
+        if(!$db->checkFriendAccess($_POST['key']))
+        {
+          die_status(14);
+        }
+        store($url, $message, $type, $db);
         return;
       }
-      else if($type == 1 || $type == 2)
+      else if($type == 1)
       {
-        $ret = deliver($url, 'type=' . $type . "&message=" . $message);
+        store($url, $message, $type, $db);
+        return;
+      }
+      else if($type == 2)
+      {
+        store($url, $message, $type, $db);
         return;
       }
     }
-    
     // error
     die_status(14);
   }
