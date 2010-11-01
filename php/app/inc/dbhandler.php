@@ -8,7 +8,7 @@
    * @author seb
    *
    */
-	class DBhandler
+  class DBhandler
 	{
 		private $dbh;
 
@@ -40,7 +40,7 @@
         throw new 
           Exception("Could not get value '" . $val . "' from database.");
       }
-      return $data[0]['key'];
+      return $data[0]['value'];
     }
 
     /**

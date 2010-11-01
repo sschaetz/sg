@@ -165,7 +165,7 @@
         // from the password we generate the access key
         var key = calculate_sha256(pswd + pswdsalt);
 
-        var urlappend = "&key=" + key + "&encrsalt=" + encrsalt + 
+        var urlappend = "&loginkey=" + key + "&encrsalt=" + encrsalt + 
           "&pswdsalt=" + pswdsalt;
         new Ajax.Request('../php/install.php?url=alice' + urlappend, 
         {
@@ -180,7 +180,7 @@
       }
     );
     
-
+/*
     tc("Initialize Clientdata", function()
       {
         var d = new Clientdata;
@@ -340,7 +340,7 @@
         }
       }
     );
-
+*/
 	</script>
 
 </head>

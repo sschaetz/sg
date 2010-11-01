@@ -1,4 +1,7 @@
 <?php
+  
+  require_once('dbhandler.php');
+  require_once('configuration.php');
 
   /**
    * Sessionhandler
@@ -18,11 +21,11 @@
      * @param $db Database connection
      * @return nothing
      */
-    public function __construct($db)
+    public function __construct(DBhandler $db, Configuration $conf)
 		{                
 		  session_start();
       $this->loggedIn = false;
-      $this->keyname = 'loginkey';
+      $this->keyname = $conf->login_key_name;
       $key = '';
 
       if(isset($_POST[$this->keyname]))           // check if key is set in requ

@@ -1,6 +1,6 @@
 <?php
 
-  include('app/inc/config.php');
+  include('app/inc/configuration.php');
 
   // some tools for installation _______________________________________________
 
@@ -28,19 +28,22 @@
   }
 
   // the installation script ___________________________________________________
-
+  $conf = new Configuration();
+  
   // ___________________________________________________________________________
   // validate the url, check that it meets format requirements 
   if(!isset($_GET['url']) || !ctype_alnum($_GET['url'])) 
     die(json_encode(array('status' => 1)));
   $url = $_GET['url'];
   // and that it does not exist yet
-  if(is_dir($install_directory.$url)) die(json_encode(array('status' => 2)));
+  if(is_dir($conf->full_install_directory.$url)) 
+    die(json_encode(array('status' => 2)));
 
   // validate the key, check that it meets format requirements 
-  if(!isset($_GET['key']) || !ctype_alnum($_GET['key'])) 
+  if(!isset($_GET[$conf->login_key_name]) || 
+    !ctype_alnum($_GET[$conf->login_key_name])) 
     die(json_encode(array('status' => 3)));
-  $key = $_GET['key'];
+  $key = $_GET[$conf->login_key_name];
 
   // validate the encrsalt, check that it meets format requirements  
   if(!isset($_GET['encrsalt']) || !ctype_alnum($_GET['encrsalt'])) 
@@ -55,15 +58,15 @@
   // ___________________________________________________________________________ 
 
   // create the url directory
-  mkdir($install_directory.$url);
+  mkdir($conf->full_install_directory.$url);
 
   // copy the index and the database file
-  copy('app/index.php', $install_directory.$url.'/index.php');
-  copy('app/db.sql3', $install_directory.$url.'/db.sql3');
-  chmod($install_directory.$url.'/db.sql3', 0666);
+  copy('app/index.php', $conf->full_install_directory.$url.'/index.php');
+  copy('app/db.sql3', $conf->full_install_directory.$url.'/db.sql3');
+  chmod($conf->full_install_directory.$url.'/db.sql3', 0666);
 
   // and written to the database
-  $db = new SQLite3($install_directory.$url.'/'.$dbfilename, 
+  $db = new SQLite3($conf->full_install_directory.$url.'/db.sql3', 
     SQLITE3_OPEN_READWRITE);
 
 	$db->exec("INSERT INTO data (key, value) VALUES('url', '".
@@ -72,7 +75,8 @@
     $encrsalt."');");
   $db->exec("INSERT INTO data (key, value) VALUES('pswdsalt', '".
     $pswdsalt."');");
-  $db->exec("INSERT INTO data (key, value) VALUES('key', '".$key."');");
+  $db->exec("INSERT INTO data (key, value) VALUES('".$conf->login_key_name.
+    "', '".$key."');");
   $db->exec("INSERT INTO data (key, value) VALUES('data', '');");
   //echo("putting $key in the database");
   // the writekey should also be returned once
