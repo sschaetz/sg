@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script type="text/javascript" src="../app/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../app/lib/sjcl-0.8.min.js"></script>
+	<script type="text/javascript" src="qunit.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="qunit.css"/>
+
+
+<script>
+
+fixture = function () 
+{
+  var passwords = { alice:  "alicepassword", 
+	                   bob:   "bobpassword"   };
+							 
+  var loginSalts = { alice: "aliceloginsalt", 
+                     bob:   "bobloginsalt"   };
+
+  var masterKeySalts = { alice: "alicemasterkeysalt", 
+                         bob:   "bobmasterkeysalt"   };
+  
+  return  {
+    getPassword: function(user) { return passwords[user]; },
+		getLoginSalt: function(user) { return loginSalts[user]; },
+		getMasterKeySalt: function(user) { return masterKeySalts[user]; }
+  };
+
+}();
+	
+	
+$(document).ready(function()
+{
+  module("Cryptographic Functions");
+	
+	test("Fixture Test", function() 
+	{
+	  equals(fixture.getPassword("alice"), "alicepassword", "Access password");
+		equals(fixture.getPassword("bob"), "bobpassword", "Access password");
+    equals(fixture.getLoginSalt("alice"), "aliceloginsalt", 
+		  "Access login salt");
+    equals(fixture.getLoginSalt("bob"), "bobloginsalt", 
+		  "Access login salt");
+    equals(fixture.getMasterKeySalt("alice"), "alicemasterkeysalt", 
+		  "Access master salt");
+    equals(fixture.getMasterKeySalt("bob"), "bobmasterkeysalt", 
+      "Access master salt");
+	});
+	
+  test("Hash Test", function() 
+  {
+		var alicehash = sjcl.codec.hex.fromBits(
+		  sjcl.hash.sha256.hash(fixture.getPassword("alice") + 
+			  fixture.getLoginSalt("alice")));
+		// generated with echo hash('sha256', 'alicepasswordaliceloginsalt'); in PHP
+		var expectedalicehash = 
+		  "84465feff6b3bb78a104c53eb31aedc632c1767ac9e1369bcb020055283d5ed2";
+    equals(alicehash, expectedalicehash, "SHA 256 hash");
+		
+		// values from http://www.cryptosys.net/manapi/api_PBE_Kdf2.html
+		var pbkdf2hash = sjcl.codec.hex.fromBits(sjcl.misc.pbkdf2("password", 
+			sjcl.codec.hex.toBits("78 57 8E 5A 5D 63 CB 06"), 2048, 192));
+		// generated 
+		var expectepbkdf2hash = "97b5a91d35af542324881315c4f849e327c4707d1bc9d322";
+		equals(pbkdf2hash, expectepbkdf2hash, "pbkdf2 Key derivation");    
+  });
+
+  
+
+});
+</script>
+  
+</head>
+<body>
+ <h1 id="qunit-header">sg Unit Test</h1>
+ <h2 id="qunit-banner"></h2>
+ <h2 id="qunit-userAgent"></h2>
+ <ol id="qunit-tests"></ol>
+ <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>
