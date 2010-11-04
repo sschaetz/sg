@@ -2,33 +2,12 @@
 
   include('app/inc/configuration.php');
 
-  // some tools for installation _______________________________________________
-
-  function generateRandStr($length)
-  {
-    $randstr = "";
-    for($i=0; $i<$length; $i++)
-    {
-      $randnum = mt_rand(0,61);
-
-      if($randnum < 10)
-      {
-        $randstr .= chr($randnum+48);
-      }
-      else if($randnum < 36)
-      {
-        $randstr .= chr($randnum+55);
-      }
-      else
-      {
-        $randstr .= chr($randnum+61);
-      }
-    }
-    return $randstr;
-  }
-
   // the installation script ___________________________________________________
   $conf = new Configuration();
+
+  // always returns JSON format
+  header('Cache-Control: no-cache, must-revalidate');
+  header('Content-type: application/json');
   
   // ___________________________________________________________________________
   // validate the url, check that it meets format requirements 
@@ -43,17 +22,19 @@
   if(!isset($_GET[$conf->login_key_name]) || 
     !ctype_alnum($_GET[$conf->login_key_name])) 
     die(json_encode(array('status' => 3)));
-  $key = $_GET[$conf->login_key_name];
+  $loginkey = $_GET[$conf->login_key_name];
 
   // validate the encrsalt, check that it meets format requirements  
-  if(!isset($_GET['encrsalt']) || !ctype_alnum($_GET['encrsalt'])) 
+  if(!isset($_GET[$conf->encrypt_key_salt_name]) || 
+    !ctype_alnum($_GET[$conf->encrypt_key_salt_name])) 
     die(json_encode(array('status' => 4)));
-  $encrsalt = $_GET['encrsalt'];
+  $encryptkeysalt = $_GET['encryptkeysalt'];
 
   // validate the pswdsalt, check that it meets format requirements  
-  if(!isset($_GET['pswdsalt']) || !ctype_alnum($_GET['pswdsalt'])) 
+  if(!isset($_GET[$conf->login_key_salt_name]) || 
+    !ctype_alnum($_GET[$conf->login_key_salt_name])) 
     die(json_encode(array('status' => 5)));
-  $pswdsalt = $_GET['pswdsalt'];
+  $loginkeysalt = $_GET['loginkeysalt'];
 
   // ___________________________________________________________________________ 
 
@@ -71,21 +52,20 @@
 
 	$db->exec("INSERT INTO data (key, value) VALUES('url', '".
     $url."');");
-	$db->exec("INSERT INTO data (key, value) VALUES('encrsalt', '".
-    $encrsalt."');");
-  $db->exec("INSERT INTO data (key, value) VALUES('pswdsalt', '".
-    $pswdsalt."');");
-  $db->exec("INSERT INTO data (key, value) VALUES('".$conf->login_key_name.
-    "', '".$key."');");
-  $db->exec("INSERT INTO data (key, value) VALUES('data', '');");
-  //echo("putting $key in the database");
+	$db->exec("INSERT INTO data (key, value) VALUES('".
+    $conf->encrypt_key_salt_name."', '".$encryptkeysalt."');");
+  $db->exec("INSERT INTO data (key, value) VALUES('".
+    $conf->login_key_salt_name."', '".$loginkeysalt."');");
+  $db->exec("INSERT INTO data (key, value) VALUES('".
+    $conf->login_key_name."', '".$loginkey."');");
+  $db->exec("INSERT INTO data (key, value) VALUES('".
+    $conf->data_block_name."', '');");
+
   // the writekey should also be returned once
   echo json_encode(
     array(
       'status' => 0, 
-      'message' => 'insatllation complete',
-      'writekey' => $key,
-    	'pswdsalt' => $pswdsalt
+      'message' => 'insatllation complete'
     )
   );
 

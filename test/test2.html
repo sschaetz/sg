@@ -4,27 +4,46 @@
 <head>
   <script type="text/javascript" src="../app/lib/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="../app/lib/sjcl-0.8.min.js"></script>
-	<script type="text/javascript" src="qunit.js"></script>
-  <link rel="stylesheet" type="text/css" media="screen" href="qunit.css"/>
+  <script type="text/javascript" src="../app/lib/json2.min.js"></script>
+  <script type="text/javascript" src="../app/lib/bigint-5.4.min.js"></script>
+	
+  <script type="text/javascript" src="qunit.js"></script>
 
+  <script type="text/javascript" src="../app/starbase.js"></script>
+  <script type="text/javascript" src="../app/crypto.js"></script>
+
+  <link rel="stylesheet" type="text/css" media="screen" href="qunit.css"/>
+  <title>sg Unit Test</title>
 
 <script>
 
 fixture = function () 
 {
   var passwords = { alice:  "alicepassword", 
-	                   bob:   "bobpassword"   };
+	                  bob:    "bobpassword"   };
 							 
   var loginSalts = { alice: "aliceloginsalt", 
                      bob:   "bobloginsalt"   };
 
   var masterKeySalts = { alice: "alicemasterkeysalt", 
                          bob:   "bobmasterkeysalt"   };
+
+  var randomSecret = { alice: "0a43774b1d4b0594246d022a224dd02307c954bc",
+                       bob:   "0cbe635015eff17b15dbf6951069af352ebc0b6b" };
   
-  return  {
+  var complexTestObject = new Object;
+  complexTestObject.value1 = "a string value"; complexTestObject.value2 = 45;
+  complexTestObject.value3 = true; complexTestObject.values = [10, true, "str"];
+  complexTestObject.object = new Object; 
+  complexTestObject.object.value1 = "a string value";
+  complexTestObject.object.value2 = 45; complexTestObject.object.value3 = true;
+  
+  return {
     getPassword: function(user) { return passwords[user]; },
 		getLoginSalt: function(user) { return loginSalts[user]; },
-		getMasterKeySalt: function(user) { return masterKeySalts[user]; }
+		getMasterKeySalt: function(user) { return masterKeySalts[user]; },
+    getRandomSecret: function(user) { return randomSecret[user]; },
+    getComplexTestObject: function() { return complexTestObject; }
   };
 
 }();
@@ -32,7 +51,9 @@ fixture = function ()
 	
 $(document).ready(function()
 {
+
   module("Cryptographic Functions");
+  // ___________________________________________________________________________
 	
 	test("Fixture Test", function() 
 	{
@@ -66,17 +87,147 @@ $(document).ready(function()
 		equals(pbkdf2hash, expectepbkdf2hash, "pbkdf2 Key derivation");    
   });
 
-  
+  test("JSON Test", function() 
+  {
+    var jsonstring = JSON.stringify(fixture.getComplexTestObject());
+    var reparsed = JSON.parse(jsonstring);
+    same(reparsed, fixture.getComplexTestObject(), "JSON roundtrip");
+  });
+
+  test("Crypto Test", function() 
+  {
+    var d = fixture.getComplexTestObject();
+    var denc = starbase.crypto.aes.encrypt(fixture.getPassword("alice"), 
+      fixture.getMasterKeySalt("alice"), d);
+    var ddec = starbase.crypto.aes.decrypt(fixture.getPassword("alice"), 
+      fixture.getMasterKeySalt("alice"), denc);
+    same(ddec, d, "Crypto roundtrip");
+  });
+
+  test("Diffie Test", function() 
+  {
+    var alicepub = starbase.crypto.diffie.publickey(
+      fixture.getRandomSecret("alice"));
+    var bobpub = starbase.crypto.diffie.publickey(
+      fixture.getRandomSecret("bob"));
+    
+    var alicesecret = starbase.crypto.diffie.secretkey(
+      fixture.getRandomSecret("alice"), bobpub);
+    var bobsecret = starbase.crypto.diffie.secretkey(
+      fixture.getRandomSecret("bob"), alicepub);
+    equals(alicesecret, bobsecret, "Diffie check");
+  });
+
+
+  module("Setup Functions");
+  // ___________________________________________________________________________
+
+  asyncTest("Reset Test", function() 
+  {
+    $.ajax(
+    {
+      url: "../php/reset.php",
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Setup");
+        start();
+      }
+    });
+  });
+
+  function testHelperSetupUser(username, assertvalue, assertext)
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword(username), 
+      fixture.getLoginSalt(username));
+    $.ajax(
+    {
+      url: "../php/install.php",
+      data: 
+      {
+        url: username, loginkey: loginkey, 
+        loginkeysalt: fixture.getLoginSalt(username), 
+        encryptkeysalt: fixture.getMasterKeySalt(username)
+      },
+      success: function(answer)
+      {
+        equals(answer.status, assertvalue, assertext); 
+        start();
+      }
+    });
+  }
+
+  asyncTest("Setup Alice Test", function() 
+  {
+    testHelperSetupUser("alice", 0, "Setup Alice");
+  });
+
+  asyncTest("Setup Alice again Test", function() 
+  {
+    testHelperSetupUser("alice", 2, "Setup Alice Twice");
+  });
+
+  asyncTest("Setup Bob Test", function() 
+  {
+    testHelperSetupUser("bob", 0, "Setup Bob");
+  });
+
+
+  module("Data Roundtrip");
+  // ___________________________________________________________________________
+
+  asyncTest("Upload Encrypted Data Test", function() 
+  {
+    var data = starbase.crypto.aes.encrypt(fixture.getPassword("alice"), 
+      fixture.getMasterKeySalt("alice"), fixture.getComplexTestObject());
+    var loginkey = starbase.hash.sha256(fixture.getPassword("alice"),
+      fixture.getLoginSalt("alice"));
+    $.ajax(
+    {
+      url: "../usr/alice/?a=save", type: "POST",
+      data: 
+      {
+        data: data,
+        loginkey: loginkey
+      },
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Data saved"); 
+        start();
+      }
+    });
+  });
+
+  asyncTest("Download Encrypted Data Test", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("alice"),
+      fixture.getLoginSalt("alice"));
+    $.ajax(
+    {
+      url: "../usr/alice/?a=load",
+      data: 
+      {
+        loginkey: loginkey
+      },
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Data loaded");
+        var data = starbase.crypto.aes.decrypt(fixture.getPassword("alice"), 
+          fixture.getMasterKeySalt("alice"), answer.data);
+        same(data, fixture.getComplexTestObject(), "Data compared"); 
+        start();
+      }
+    });
+  });
 
 });
 </script>
   
 </head>
-<body>
- <h1 id="qunit-header">sg Unit Test</h1>
- <h2 id="qunit-banner"></h2>
- <h2 id="qunit-userAgent"></h2>
- <ol id="qunit-tests"></ol>
- <div id="qunit-fixture">test markup, will be hidden</div>
-</body>
+  <body>
+    <h1 id="qunit-header">sg Unit Test</h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+  </body>
 </html>

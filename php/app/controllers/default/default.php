@@ -1,11 +1,5 @@
-<?php 
+<?php ?>
 
-echo("default/default.php");
-if($this->loggedin)
-{
-	echo("loggedin");
-}
-else
-{
-	echo("loggedout");
-}
+<h3>Welcome</h3>
+
+<?php

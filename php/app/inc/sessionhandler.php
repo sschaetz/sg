@@ -28,9 +28,13 @@
       $this->keyname = $conf->login_key_name;
       $key = '';
 
-      if(isset($_POST[$this->keyname]))           // check if key is set in requ
+      if(isset($_POST[$this->keyname]))           // check if key is set in POST
       {
         $key = $_POST[$this->keyname];
+      }
+      else if(isset($_GET[$this->keyname]))        // check if key is set in GET
+      {
+        $key = $_GET[$this->keyname];
       }
       else if(isset($_SESSION[$this->keyname]))   // check if key is set in sess
       {
