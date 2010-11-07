@@ -98,11 +98,12 @@
      */
     function insertRow($table, $data)
     {
+      $fields = implode(',', array_keys($data));
       $placeholders = implode(',', array_fill(0, count($data), '?'));
       $stmt = $this->dbh->prepare("INSERT INTO " . $table .
-        "(" . $placeholders . ") VALUES (" . $placeholders . ")");
-                                  // create one large array to bint to statement
-      $data = array_merge(array_keys($data), array_values($data));
+        " (" . $fields . ") VALUES (" . $placeholders . ")");
+
+      $data = array_values($data);
       $stmt->execute($data);
       
       if($stmt->rowCount() != 1) 

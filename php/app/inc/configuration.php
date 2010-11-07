@@ -22,8 +22,10 @@
 	  public $install_directory = 'usr/';
 	  public $include_directory = 'php/app/inc/';
 	  public $controller_directory = 'php/app/controllers/';
+
+    public $user_url_base = 'http://localhost/dev/sg/usr/';
 	  
-    // these values doe not have to be changed _________________________________
+    // these values do not have to be changed __________________________________
     
 	  public $login_key_name = 'loginkey';
     public $login_key_salt_name = 'loginkeysalt';

@@ -51,7 +51,7 @@
     SQLITE3_OPEN_READWRITE);
 
 	$db->exec("INSERT INTO data (key, value) VALUES('url', '".
-    $url."');");
+    $conf->user_url_base . $url."');");
 	$db->exec("INSERT INTO data (key, value) VALUES('".
     $conf->encrypt_key_salt_name."', '".$encryptkeysalt."');");
   $db->exec("INSERT INTO data (key, value) VALUES('".

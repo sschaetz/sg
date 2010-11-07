@@ -28,8 +28,18 @@ fixture = function ()
   var masterKeySalts = { alice: "alicemasterkeysalt", 
                          bob:   "bobmasterkeysalt"   };
 
-  var randomSecret = { alice: "0a43774b1d4b0594246d022a224dd02307c954bc",
-                       bob:   "0cbe635015eff17b15dbf6951069af352ebc0b6b" };
+  var randomSecrets = { alice: "0a43774b1d4b0594246d022a224dd02307c954bc",
+                        bob:   "0cbe635015eff17b15dbf6951069af352ebc0b6b" };
+  
+  var urls = { alice: "http://localhost/dev/sg/usr/alice",
+               bob:   "http://localhost/dev/sg/usr/bob" };
+
+  var friendAccessKeys = { alice: "28acd87b38ee414018f3e86036deaace279950b9",
+                           bob:   "3844334830b5c78c36f9a1230de7219300dc6e76" };
+
+  var friendIds = { alice:  "1", 
+	                  bob:    "2" };
+  
   
   var complexTestObject = new Object;
   complexTestObject.value1 = "a string value"; complexTestObject.value2 = 45;
@@ -42,8 +52,11 @@ fixture = function ()
     getPassword: function(user) { return passwords[user]; },
 		getLoginSalt: function(user) { return loginSalts[user]; },
 		getMasterKeySalt: function(user) { return masterKeySalts[user]; },
-    getRandomSecret: function(user) { return randomSecret[user]; },
-    getComplexTestObject: function() { return complexTestObject; }
+    getRandomSecret: function(user) { return randomSecrets[user]; },
+    getComplexTestObject: function() { return complexTestObject; },
+    getUrl: function(user) { return urls[user]; },
+    getFriendAccessKey: function(user) { return friendAccessKeys[user]; },
+    getFriendId: function(user) { return friendIds[user]; }
   };
 
 }();
@@ -104,6 +117,7 @@ $(document).ready(function()
     same(ddec, d, "Crypto roundtrip");
   });
 
+/*
   test("Diffie Test", function() 
   {
     var alicepub = starbase.crypto.diffie.publickey(
@@ -117,7 +131,7 @@ $(document).ready(function()
       fixture.getRandomSecret("bob"), alicepub);
     equals(alicesecret, bobsecret, "Diffie check");
   });
-
+*/
 
   module("Setup Functions");
   // ___________________________________________________________________________
@@ -218,6 +232,36 @@ $(document).ready(function()
       }
     });
   });
+
+
+  module("Friend Invitation");
+  // ___________________________________________________________________________
+
+  asyncTest("Send Invite Test", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("alice"),
+      fixture.getLoginSalt("alice"));
+    $.ajax(
+    {
+      url: "../usr/alice/?c=send&a=invite", type: "POST",
+      data: 
+      {
+        loginkey: loginkey,
+        url: fixture.getUrl('bob'),
+        id: fixture.getFriendId('bob'),
+        friendaccesskey: fixture.getFriendAccessKey('bob'),
+        invitemessage: 
+          JSON.stringify({text: 'Hi bob, I would like you to be my friend!',
+            friendaccesskey: fixture.getFriendAccessKey('bob')})      
+      },
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Invite sent");
+        start();
+      }
+    });
+  });
+
 
 });
 </script>
