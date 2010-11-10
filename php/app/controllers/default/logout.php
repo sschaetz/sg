@@ -1,5 +1,5 @@
 <?php
 
-$sh->destroy();
+$ah->destroy();
 
 

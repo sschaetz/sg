@@ -68,7 +68,20 @@
       }
       return $retvalue;
     }
-    
+
+    /**
+     * Get all contents from a table
+     * @param $table the name of the table
+     * @return associative array (row1=>(key1=>value1,key2=>value2,...),row2..)
+     */
+    function getAll($table)
+    {
+    	                     // create a placeholder for each element of the array
+			$stmt = $this->dbh->prepare("SELECT * FROM ".$table);
+			$stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Update a value in the data table
      * @param $key the key of the value to update
@@ -114,7 +127,8 @@
     }
     
     // —————————————————————————————————————————————————————————————————————————
-    // Specialized functions
+    // Specialized functions, they contain business logic and should not be
+    // members of this class but some sort of helper classes for different tasks
     // —————————————————————————————————————————————————————————————————————————
     
     /**
@@ -126,15 +140,18 @@
     {
       $stmt =  $this->dbh->prepare("SELECT id from friends " . 
         " WHERE friendaccesskey = :friendaccesskey AND status = 1");
-      $stmt->bindParam(':accesskey', $accesskey, PDO::PARAM_STR);
+      $stmt->bindParam(':friendaccesskey', $friendaccesskey, PDO::PARAM_STR);
       $stmt->execute();
     	
       $data = $stmt->fetchAll();
-      if(count($data) < 1 || $data[0]['key'] != $key)
+      if(count($data) < 1)
       {
         return false;
       }
-      return true;
+      else
+      {
+        return $data[0]['id'];
+      }
     }
 
 	}

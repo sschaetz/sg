@@ -22,11 +22,11 @@ ________________________________________________________________________________
 
  No | Description
 ================================================================================
- -1 | notset
-  0 | sent invite
+ -1 | notset                       (only js client)
+  0 | sent invite                  (only js client)
   1 | friends
-  2 | sent invite but declined
-  3 | received invite but declined
+  2 | sent invite but declined     (only js client)
+  3 | received invite but declined (only js client)
   4 | ignoring
 
 

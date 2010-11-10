@@ -31,6 +31,7 @@
     public $login_key_salt_name = 'loginkeysalt';
     public $encrypt_key_salt_name = 'encryptkeysalt';
     public $data_block_name = 'data';	  
+    public $friend_access_key_name = 'friendaccesskey';
 
 	  public $unset_value = 'unset';
 	  

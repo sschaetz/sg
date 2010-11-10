@@ -1,7 +1,7 @@
 <?php
 
   require_once('configuration.php');
-  require_once('sessionhandler.php');
+  require_once('accesscontrolhandler.php');
   require_once('dbhandler.php');
 
   /**
@@ -17,7 +17,9 @@
   {
     private $conf;
     private $loggedIn;
-    private $jsonHeaderSet;  	
+    private $friendAccess;
+    private $jsonHeaderSet;
+    private $dbh;  	
 
     /**
      * @brief Constructor creates a configuration object and starts dispatching 
@@ -53,7 +55,39 @@
           $this->activateJsonResponse();
           $dieValue = json_encode(array('status' => func_get_arg(0)));
         }
-        else
+        else if(func_num_args() == 2)
+        {
+          $this->activateJsonResponse();
+          $dieValue = json_encode(array('status' => func_get_arg(0),
+            'message' => func_get_arg(1)));
+        }
+        die($dieValue);
+      }
+    }
+    
+    /**
+     * @brief Require Access Key
+     *
+     * A method for actions called by a remote user that require an access key
+     * to identify the user. 
+     *
+     * @param Status int optional status number (enforces JSON return)
+     *
+     * @param Message string optional message (enforces JSON return)
+     *
+     * @returns nothing
+     */
+    private function requiresAccessKey()
+    {
+      if(!$this->friendAccess)
+      {
+        $dieValue = 'Sorry, access key required.';
+        if(func_num_args() == 1)
+        {
+          $this->activateJsonResponse();
+          $dieValue = json_encode(array('status' => func_get_arg(0)));
+        }
+        else if(func_num_args() == 2)
         {
           $this->activateJsonResponse();
           $dieValue = json_encode(array('status' => func_get_arg(0),
@@ -144,9 +178,10 @@
       }
       
       $db = new DBhandler($this->conf->dbconnectionstring);
-      $sh = new Sessionhandler($db, $this->conf);
+      $ah = new Accesscontrolhandler($db, $this->conf);
       $conf = $this->conf;               // make conf object available to action
-      $this->loggedIn = $sh->loggedIn();
+      $this->loggedIn = $ah->loggedIn();
+      $this->friendAccess = $ah->friendAccess();
       require($action);
       exit();
     }

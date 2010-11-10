@@ -175,14 +175,14 @@ $(document).ready(function()
     testHelperSetupUser("alice", 0, "Setup Alice");
   });
 
-  asyncTest("Setup Alice again Test", function() 
-  {
-    testHelperSetupUser("alice", 2, "Setup Alice Twice");
-  });
-
   asyncTest("Setup Bob Test", function() 
   {
     testHelperSetupUser("bob", 0, "Setup Bob");
+  });
+
+  asyncTest("Setup Alice again Test", function() 
+  {
+    testHelperSetupUser("alice", 2, "Setup Alice Twice");
   });
 
 
@@ -262,6 +262,77 @@ $(document).ready(function()
     });
   });
 
+  asyncTest("Recv Invite Test", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("bob"),
+      fixture.getLoginSalt("bob"));
+    $.ajax(
+    {
+      url: "../usr/bob/?c=access&a=invites", type: "POST",
+      data: 
+      {
+        loginkey: loginkey
+      },
+      success: function(answer)
+      {
+        equals(answer[0].id, 1, "Invite sent");
+        equals(answer[0].status, 0, "Message id ok");
+        invitemessage = JSON.parse(answer[0].invitemessage);
+        equals(invitemessage.friendaccesskey, fixture.getFriendAccessKey('bob'),
+          'Friendaccesskey ok');
+        start();
+      }
+    });
+  });
+
+  asyncTest("Accept Invite", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("bob"),
+      fixture.getLoginSalt("bob"));
+    $.ajax(
+    {
+      url: "../usr/bob/?c=send&a=accinvite", type: "POST",
+      data: 
+      {
+        loginkey: loginkey,
+        url: fixture.getUrl('alice'),
+        id: fixture.getFriendId('alice'),
+        friendaccesskey: fixture.getFriendAccessKey('alice'),
+        remotefriendaccesskey: fixture.getFriendAccessKey('bob'),
+        acceptmessage: 
+          JSON.stringify({text: 'Hi alice, I would be glad to be your friend!',
+            friendaccesskey: fixture.getFriendAccessKey('alice')})   
+      },
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Accept invite sent");
+        start();
+      }
+    });
+  });
+
+  asyncTest("Recv Accept Invite Test", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("alice"),
+      fixture.getLoginSalt("alice"));
+    $.ajax(
+    {
+      url: "../usr/alice/?c=access&a=invites", type: "POST",
+      data: 
+      {
+        loginkey: loginkey
+      },
+      success: function(answer)
+      {
+        equals(answer[0].id, 1, "Invite sent");
+        equals(answer[0].status, 1, "Message id ok");
+        invitemessage = JSON.parse(answer[0].invitemessage);
+        equals(invitemessage.friendaccesskey, 
+          fixture.getFriendAccessKey('alice'), 'Friendaccesskey ok');
+        start();
+      }
+    });
+  });
 
 });
 </script>

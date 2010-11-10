@@ -1,11 +1,13 @@
 <?php
 
-// called by remote user to deliver an invite
+// called by remote user to deliver an accept invite
+
+$this->requiresAccessKey();
 
 // we expect:
 // a URL of the sender
-// a message (containing a friend access key the local user to access the remote 
-// user social space)
+// an acceptmessage
+// access key to our social space
 
 // validate
 // _____________________________________________________________________________
@@ -17,18 +19,18 @@ if(!filter_input(INPUT_POST, 'source', FILTER_VALIDATE_URL))
 }
 $source = $_POST['source'];
 
-if(!json_decode($_POST['invitemessage']))
+if(!json_decode($_POST['acceptmessage']))
 {
-  $this->returnJsonStatus(1, 'invitemessage not OK');
+  $this->returnJsonStatus(1, 'acceptmessage not OK');
 }
-$invitemessage = $_POST['invitemessage'];
+$invitemessage = $_POST['acceptmessage'];
 
 // save message
 // _____________________________________________________________________________
 
 // status is optional for later use (spam prevention etc)
 $db->insertRow('invites', 
-  array('source' => $source, 'invitemessage' => $invitemessage, 'status' => 0,
+  array('source' => $source, 'invitemessage' => $invitemessage, 'status' => 1,
   'timestamp' => 0));
 
 $this->returnJsonStatus(0, 'invite Ok');
