@@ -334,6 +334,53 @@ $(document).ready(function()
     });
   });
 
+
+  module("Message Transfer");
+  // ___________________________________________________________________________
+
+  asyncTest("Alice Send Message", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("alice"),
+      fixture.getLoginSalt("alice"));
+    $.ajax(
+    {
+      url: "../usr/alice/?c=send&a=message", type: "POST",
+      data: 
+      {
+        loginkey: loginkey,
+        url: fixture.getUrl('bob'),
+        remotefriendaccesskey: fixture.getFriendAccessKey('alice'),
+        messagetext: 
+          JSON.stringify({text: 'Hi bob, how is it going?'})      
+      },
+      success: function(answer)
+      {
+        equals(answer.status, 0, "Message sent");
+        start();
+      }
+    });
+  });
+
+  asyncTest("Bob Check Message", function() 
+  {
+    var loginkey = starbase.hash.sha256(fixture.getPassword("bob"),
+      fixture.getLoginSalt("bob"));
+    $.ajax(
+    {
+      url: "../usr/bob/?c=access&a=messages", type: "POST",
+      data: 
+      {
+        loginkey: loginkey
+      },
+      success: function(answer)
+      {
+        equals(JSON.parse(answer[0].message).text, 'Hi bob, how is it going?', 
+          "Message received");
+        start();
+      }
+    });
+  });
+
 });
 </script>
   
