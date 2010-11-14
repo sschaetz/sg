@@ -20,11 +20,12 @@
     return "Even with a function it works, YAY!";
   }
   $(document).ready(function(){
-    $('#mylist').sglist();
+    $('#mylist').sglist( /*{elementclicked: function(event, id) { console.log('clicked ' + id); } } */);
+    $('#mylist').bind('sglistelementclicked', function(event, id) { console.log('clicked ' + id); });
     $('#mylist').sglist('pushTop', "HIHIHIHIHI!", 15);
     $('#mylist').sglist('pushTop', "Newtop!", 13);
     $('#mylist').sglist('pushTop', uga, 12);
-    //$('#mylist').sglist('remove', 12);
+    $('#mylist').sglist('remove', 12);
   });
   
   

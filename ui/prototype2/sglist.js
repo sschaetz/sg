@@ -21,7 +21,7 @@ $.widget("ui.sglist",
     // create the list with event handler
     $("<ul/>", {
       "class": this.options.listname + "-list",
-      click: this._elementClick
+      click: jQuery.proxy(this._elementClickEvent, this)
     }).appendTo(this.element);
     
     this.element.data('numElements', 0);
@@ -48,11 +48,11 @@ $.widget("ui.sglist",
     this.element.data('numElements', this.element.data('numElements') - 1);
   },
 
-  _elementClick: function(e)
+  _elementClickEvent: function(e)
   {
 	  if($(e.target).is('li'))
 		{
-      console.log($(e.target).data('id'));
+      this._trigger('elementclicked', 0, $(e.target).data('id')); 
     }
   },
 
