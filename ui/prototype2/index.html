@@ -15,9 +15,19 @@
 <script type="text/javascript" src="jquery.ui.widget.js"></script>
 <script type="text/javascript" src="sglist.js"></script>
 <script type="text/javascript">
+  function uga()
+  {
+    return "Even with a function it works, YAY!";
+  }
   $(document).ready(function(){
     $('#mylist').sglist();
+    $('#mylist').sglist('pushTop', "HIHIHIHIHI!", 15);
+    $('#mylist').sglist('pushTop', "Newtop!", 13);
+    $('#mylist').sglist('pushTop', uga, 12);
+    //$('#mylist').sglist('remove', 12);
   });
+  
+  
 </script>
 
 
