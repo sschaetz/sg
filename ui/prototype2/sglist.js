@@ -13,14 +13,17 @@ $.widget("ui.sglist",
 {
 	options: 
   {
-    listname: 'sglist'
+    listname: 'sglist',
+    listid: 'sglist-id'
 	},
 
-	_create: function() 
+	_create: function(options) 
   {
+    $.extend(this.options, options);
     // create the list with event handler
     $("<ul/>", {
-      "class": this.options.listname + "-list",
+      "class": this.options.listname,
+      id: this.options.listid,
       click: jQuery.proxy(this._elementClickEvent, this)
     }).appendTo(this.element);
     
@@ -29,15 +32,16 @@ $.widget("ui.sglist",
 
   // private methods
   
-  _pushTop: function(element, id)
+  _pushTop: function(element, id, classid)
   {
     var content = (typeof element === 'function') ? element() : element;
-
+    var classstring = this.options.listname + '-elem, ' 
+      + this.options.listname + '-elem-' + id +
+      (classid ? ', ' + classid : '');
     $("<li/>", {
       text: content,
-      "class": this.options.listname + '-elem, ' + 
-               this.options.listname + '-elem-' + id
-    }).prependTo('.'+this.options.listname+ '-list').data('id', id);
+      "class": classstring               
+    }).prependTo('.'+this.options.listname).data('id', id);
 
     this.element.data('numElements', this.element.data('numElements') + 1);
   },
@@ -65,9 +69,9 @@ $.widget("ui.sglist",
   // public methods
   
   // create a new element and push it to the top
-  pushTop: function(element, id) 
+  pushTop: function(element, id, classid) 
   {
-    this._pushTop(element, id);
+    this._pushTop(element, id, classid);
   },
   
   // remove an element by its id
