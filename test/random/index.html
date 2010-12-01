@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>Random Number Tester</title>
+
+		<link type="text/css" href="css/dark-hive/jquery-ui-1.8.6.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.6.custom.min.js"></script>
+    <script type="text/javascript" src="../../app/lib/sjcl-0.8.min.js"></script>
+
+		<script type="text/javascript">
+      function checkEntropy()
+      {
+        if(!sjcl.random.isReady())
+        {
+          $("#progressbar").progressbar("value", 
+            Math.floor(sjcl.random.getProgress()*100));
+          setTimeout("checkEntropy()", 100);
+        }
+        else
+        {
+          $("#dialog-modal").dialog('close');
+        }
+      }
+
+		  $(function(){
+        sjcl.random.startCollectors();
+        $("#consume").button();
+		    $("#dialog-modal").dialog({
+          height: 200,
+          width: 450,
+          modal: true, 
+          autoOpen: false,
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+        });       
+		    $("#progressbar").progressbar({value: 0});
+
+        $("#consume").click(function() 
+        { 
+          if(!sjcl.random.isReady())
+          {
+            $("#dialog-modal").dialog('open');
+            checkEntropy();
+          }
+          else
+          { 
+            console.log(sjcl.random.randomWords());
+          }
+        });
+      });
+	</script>
+
+      
+    </script>
+
+    <style type="text/css">
+		</style>	
+	
+  </head>
+	<body>
+	<h1>Random Number Tester</h1>
+
+    <button id="consume">Consume random number</button>
+    
+    <div id="dialog-modal" title="Need more entropy">
+	    <p>WE NEED ENTROPY! <br/>
+      Move and click your mouse like a crazy person, please!</p>
+      <div id="progressbar"></div>
+    </div>
+    
+
+	</body>
+</html>
+
+
