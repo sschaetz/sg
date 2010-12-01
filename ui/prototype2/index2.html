@@ -225,7 +225,13 @@
     var viewportHeight = 
       window.innerHeight ? window.innerHeight : $(window).height();
     $('#contentcontainer').css({'height':(viewportHeight-35)+'px'});
-    $('#friendlistcontainer').sglist( {listname: 'friendlist', listid: 'friendlist'} );
+
+    $('#friendlistcontainer').sglist( {
+      listname: 'friendlist', 
+      listid: 'friendlist', 
+      elementclicked: function(event, id) { console.log('clicked hihi ' + id); }
+    } );
+
     $('#messagelistcontainer').sglist( {listname: 'messagelist', listid: 'messagelist'} );
     $('.scroll-pane').jScrollPane({showArrows: true});
     $('#messagelistcontainer').sglist('pushTop', "HIHIHIHIHI!", 15, 'normal');

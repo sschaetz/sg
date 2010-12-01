@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+	<title>stub</title>
+
+  <script type="text/javascript" src="../app/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../app/lib/sjcl-0.8.min.js"></script>
+  <script type="text/javascript" src="../app/lib/json2.min.js"></script>
+  <script type="text/javascript" src="../app/lib/bigint-5.4.min.js"></script>
+
+  <script type="text/javascript" src="../app/starbase.js"></script>
+  <script type="text/javascript" src="../app/crypto.js"></script>
+
+  <link type="text/css" href="css/dark-hive/jquery-ui-1.8.6.custom.css" 
+    rel="stylesheet" />	
+	<script type="text/javascript" src="js/jquery-ui-1.8.6.custom.min.js"></script>
+
+	
+	<script>
+
+    fixture = function () 
+    {
+      var passwords = { alice:  "alicepassword",
+                        bob:    "bobpassword",
+                        carol:  "carolpassword",
+                        dave:   "davepassword", 
+	                      eve:    "evepassword"   };
+							     
+      var loginSalts = { alice: "aliceloginsalt", 
+                         bob:   "bobloginsalt",
+                         carol: "carolloginsalt",
+                         dave:  "daveloginsalt", 
+                         eve:   "eveloginsalt"   };
+
+      var masterKeySalts = { alice: "alicemasterkeysalt", 
+                             bob:   "bobmasterkeysalt",
+                             carol: "carolmasterkeysalt",
+                             dave:  "davemasterkeysalt", 
+                             eve:   "evemasterkeysalt"    };
+
+      var randomSecrets = { alice: "aaa0a43774b1d4b0594246d022a224dd02307c954bc",
+                            bob:   "bbb0cbe635015eff17b15dbf6951069af352ebc0b6b",
+                            carol: "ccc36ca3f5f333d699e36bdba0324bb450110b62f9e",
+                            dave:  "ddd0045055f27c6ac1d1fc91b560df514a32f51c4e9",
+                            eve:   "eee1392a1ba3b8bc01a28113ab225e69ee41bbd11ca" };
+
+      var friendAccessKeys = { alice: "aaa28acd87b38ee414018f3e86036deaace279950b9",
+                               bob:   "bbb3844334830b5c78c36f9a1230de7219300dc6e76",
+                               carol: "ccc36bf28932c3645fa201593ba14d2f0e006fc9ed6",
+                               dave:  "ddd04383d3909443bc61a901e271cf9c37514560aaa",
+                               eve:   "eee0f2e34ef0395e32a17d81ec61572d9ed013bd643" };
+      
+      return {
+        getPassword: function(user) { return passwords[user]; },
+		    getLoginSalt: function(user) { return loginSalts[user]; },
+		    getMasterKeySalt: function(user) { return masterKeySalts[user]; },
+        getRandomSecret: function(user) { return randomSecrets[user]; },
+        getFriendAccessKey: function(user) { return friendAccessKeys[user]; },
+      };
+
+    }();
+
+
+    var src = 'alice';
+    var dst = 'bob';
+
+
+    function reset(username)
+    {
+      $.ajax(
+      {
+        url: "../php/reset.php" + 
+          ((username) ? ('?username=&' + username) : ('')),
+        success: function(answer)
+        {
+          if(answer.status != 0)
+          {
+            alert('error resetting ' + 
+              ((username) ? ('user ' + username) : ('all')));
+          }
+        }
+      });
+    }
+
+    function install(username)
+    { 
+      var loginkey = starbase.hash.sha256(fixture.getPassword(username), 
+        fixture.getLoginSalt(username));
+      $.ajax(
+      {
+        url: "../php/install.php",
+        data: 
+        {
+          url: username, 
+          loginkey: loginkey, 
+          loginkeysalt: fixture.getLoginSalt(username), 
+          encryptkeysalt: fixture.getMasterKeySalt(username)
+        },
+        success: function(answer)
+        {
+          if(answer.status != 0)
+          {
+            alert('error installing user: ' + username);
+          }
+        }
+      });
+    }
+
+    function resetInstall(username)
+    {
+      $.ajax(
+      {
+        url: "../php/reset.php?username=" + username,
+        success: function(answer)
+        {
+          if(answer.status != 0)
+          {
+            alert('error resetting ' + 
+              ((username) ? ('user ' + username) : ('all')));
+            
+          }
+          else
+          {
+            install(username);
+          }
+        }
+      });
+    }
+
+
+	  $(function() {
+		  $("#source").buttonset();
+      $("#destination").buttonset();
+      $("#reinstall, #invite, #send, #resetall").button();
+
+      $("#reinstall").click(function() { resetInstall(src); console.log('reinstall'); });
+      $("#invite").click(function() { console.log('invite'); });
+      $("#send").click(function() { console.log(src + " " + dst); });
+      $("#resetall").click(function() { reset(); console.log('reset');});
+
+      $("#source1").click(function() { src = 'alice'; });
+      $("#source2").click(function() { src = 'bob'; });
+      $("#source3").click(function() { src = 'carol'; });
+      $("#source4").click(function() { src = 'dave'; });
+      $("#source5").click(function() { src = 'eve';});
+
+      $("#source1").click(function() { src = 'alice'; });
+      $("#source2").click(function() { src = 'bob'; });
+      $("#source3").click(function() { src = 'carol'; });
+      $("#source4").click(function() { src = 'dave'; });
+      $("#source5").click(function() { src = 'eve';});
+
+
+	  });
+
+
+	</script>
+
+</head>
+	<body>
+	  <div id="source">
+		  <input type="radio" id="source1" name="radiosource" checked="checked"/><label for="source1">Alice</label>
+		  <input type="radio" id="source2" name="radiosource" /><label for="source2">Bob</label>
+		  <input type="radio" id="source3" name="radiosource" /><label for="source3">Carol</label>
+      <input type="radio" id="source4" name="radiosource" /><label for="source4">Dave</label>
+      <input type="radio" id="source5" name="radiosource" /><label for="source5">Eve</label>
+	  </div>
+    <br/>
+    <input id="resetall" type="submit" value="Reset All"/>
+    <input id="reinstall" type="submit" value="Reinstall"/>
+    <input id="invite" type="submit" value="Invite"/>
+    <input id="send" type="submit" value="Send Message"/>
+    <br/>
+    <br/>
+	  <div id="destination">
+		  <input type="radio" id="destination1" name="radiodestination"/><label for="destination1">Alice</label>
+		  <input type="radio" id="destination2" name="radiodestination" checked="checked"/><label for="destination2">Bob</label>
+		  <input type="radio" id="destination3" name="radiodestination" /><label for="destination3">Carol</label>
+      <input type="radio" id="destination4" name="radiodestination" /><label for="destination4">Dave</label>
+      <input type="radio" id="destination5" name="radiodestination" /><label for="destination5">Eve</label>
+	  </div>
+	</body>
+</html>
+

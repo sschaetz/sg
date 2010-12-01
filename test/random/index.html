@@ -21,6 +21,7 @@
         else
         {
           $("#dialog-modal").dialog('close');
+          sjcl.random.stopCollectors(1);
         }
       }
 
@@ -42,11 +43,12 @@
           if(!sjcl.random.isReady())
           {
             $("#dialog-modal").dialog('open');
+            sjcl.random.startCollectors();
             checkEntropy();
           }
           else
           { 
-            console.log(sjcl.random.randomWords());
+            console.log(sjcl.random.randomWords(1));
           }
         });
       });
