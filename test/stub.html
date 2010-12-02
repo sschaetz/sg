@@ -118,7 +118,6 @@
           {
             alert('error resetting ' + 
               ((username) ? ('user ' + username) : ('all')));
-            
           }
           else
           {
@@ -134,10 +133,10 @@
       $("#destination").buttonset();
       $("#reinstall, #invite, #send, #resetall").button();
 
-      $("#reinstall").click(function() { resetInstall(src); console.log('reinstall'); });
+      $("#reinstall").click(function() { resetInstall(src); });
       $("#invite").click(function() { console.log('invite'); });
       $("#send").click(function() { console.log(src + " " + dst); });
-      $("#resetall").click(function() { reset(); console.log('reset');});
+      $("#resetall").click(function() { reset(); });
 
       $("#source1").click(function() { src = 'alice'; });
       $("#source2").click(function() { src = 'bob'; });
@@ -180,6 +179,10 @@
       <input type="radio" id="destination4" name="radiodestination" /><label for="destination4">Dave</label>
       <input type="radio" id="destination5" name="radiodestination" /><label for="destination5">Eve</label>
 	  </div>
-	</body>
+    <br/>
+    <div>
+      Message: <input type="text" id="messagecontent"/>
+    </div>	
+  </body>
 </html>
 
