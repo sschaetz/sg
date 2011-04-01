@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:sb="http://www.starba.se/api/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="starbase" targetNamespace="http://www.starba.se/api/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.starba.se/api/">
+    
+    
+    
+    
+    
+      <xsd:element name="accesstoken" type="xsd:string">
+      </xsd:element>
+      
+        
+            <xsd:element name="payload" type="xsd:string"></xsd:element>
+        
+            <xsd:element name="salt" type="xsd:string"></xsd:element>
+        
+        
+            <xsd:complexType name="messagetype">
+            	<xsd:sequence>
+                    <xsd:element name="id" type="xsd:int" minOccurs="0" maxOccurs="1">
+                    	<xsd:annotation>
+                    		<xsd:documentation>optional id of message, the id is give by the server that received the message</xsd:documentation>
+                    	</xsd:annotation></xsd:element>
+                    <xsd:element name="sent_timestamp"
+            			type="xsd:dateTime" minOccurs="0" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>timestamp set by sender</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+            		<xsd:element name="received_timestamp"
+            			type="xsd:dateTime" minOccurs="0" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>timestamp set by last receiver</xsd:documentation>
+                        </xsd:annotation>
+            		</xsd:element>
+                    <xsd:element name="accesstoken" type="xsd:string" minOccurs="0" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>token used to deliver message</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="sender" type="xsd:anyURI"
+            			minOccurs="0" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>address of sender</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+            		<xsd:element name="receiver" type="xsd:anyURI"
+            			minOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>address of receiver</xsd:documentation>
+                        </xsd:annotation>
+            		</xsd:element>
+            		<xsd:element name="content" type="xsd:string"
+            			minOccurs="1" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>message content</xsd:documentation>
+                        </xsd:annotation>
+            		</xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
+            
+            <xsd:element name="messages" type="sb:messagestype"></xsd:element>
+        
+    
+            <xsd:complexType name="messagestype">
+            	<xsd:sequence>
+            		<xsd:element name="messages" type="sb:messagetype" minOccurs="1" maxOccurs="unbounded"></xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
+    
+            <xsd:element name="message" type="sb:messagetype"></xsd:element>
+        
+            <xsd:element name="messageid" type="xsd:int"></xsd:element>
+        
+            <xsd:complexType name="statustype">
+            	<xsd:sequence>
+            		<xsd:element name="success" type="xsd:boolean" minOccurs="1" maxOccurs="1">
+            			<xsd:annotation>
+            				<xsd:documentation>did operation succeed</xsd:documentation>
+            			</xsd:annotation></xsd:element>
+            		<xsd:element name="id" type="xsd:int" minOccurs="0"
+            			maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>error id</xsd:documentation>
+                        </xsd:annotation>
+            		</xsd:element>
+            		<xsd:element name="message" type="xsd:string"
+            			minOccurs="0" maxOccurs="1">
+                        <xsd:annotation>
+                        	<xsd:documentation>error message</xsd:documentation>
+                        </xsd:annotation>
+            		</xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
+    
+            <xsd:element name="default" type="sb:statustype"></xsd:element>
+        
+            <xsd:complexType name="infotype">
+                <xsd:annotation>
+                	<xsd:documentation></xsd:documentation>
+                </xsd:annotation>
+                <xsd:sequence>
+            		<xsd:element name="salt" type="xsd:string">
+            			<xsd:annotation>
+            				<xsd:documentation>salt user must use to authenticate himself</xsd:documentation>
+            			</xsd:annotation></xsd:element>
+            		<xsd:element name="accesstoken" type="xsd:string">
+            			<xsd:annotation>
+            				<xsd:documentation>accesstoken guests can use to send friend requests</xsd:documentation>
+            			</xsd:annotation></xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="nil" type="xsd:string"></xsd:element>
+    
+            <xsd:element name="status" type="sb:statustype"></xsd:element>
+            <xsd:element name="in" type="xsd:string"></xsd:element>
+            <xsd:element name="messagesResponse">
+            	<xsd:complexType>
+            		<xsd:sequence>
+            			<xsd:element name="out" type="xsd:string"></xsd:element>
+            		</xsd:sequence>
+            	</xsd:complexType>
+            </xsd:element>
+            <xsd:element name="in1" type="xsd:string"></xsd:element>
+            <xsd:element name="send_messageResponse">
+            	<xsd:complexType>
+            		<xsd:sequence>
+            			<xsd:element name="out" type="xsd:string"></xsd:element>
+            		</xsd:sequence>
+            	</xsd:complexType>
+            </xsd:element>
+            <xsd:element name="in2" type="xsd:string"></xsd:element>
+            <xsd:element name="receive_messageResponse">
+            	<xsd:complexType>
+            		<xsd:sequence>
+            			<xsd:element name="out" type="xsd:string"></xsd:element>
+            		</xsd:sequence>
+            	</xsd:complexType>
+            </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="defaultRequest">
+    <wsdl:part element="sb:nil" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="defaultResponse">
+    <wsdl:part element="sb:default" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="load_dataRequest">
+  	<wsdl:part name="parameters" element="sb:accesstoken"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="load_dataResponse">
+  	<wsdl:part name="parameters" element="sb:payload"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="store_dataRequest">
+  	<wsdl:part name="parameters" element="sb:payload"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="store_dataResponse">
+  	<wsdl:part name="parameters" element="sb:status"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="load_messagesRequest">
+  	<wsdl:part name="parameters" element="sb:accesstoken"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="load_messagesResponse">
+  	<wsdl:part name="parameters" element="sb:messages"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="send_messageRequest">
+  	<wsdl:part name="parameters" element="sb:message"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="send_messageResponse">
+  	<wsdl:part name="parameters" element="sb:status"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="receive_messageRequest">
+  	<wsdl:part name="parameters" element="sb:message"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="receive_messageResponse">
+  	<wsdl:part name="parameters" element="sb:status"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="starbase">
+    <wsdl:operation name="default">
+      <wsdl:documentation>default endpoint, return default information (how to log in, how to send friend requests)</wsdl:documentation>
+      <wsdl:input message="sb:defaultRequest"/>
+      <wsdl:output message="sb:defaultResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="load_data">
+    	<wsdl:documentation>load the encrypted data package</wsdl:documentation>
+    	<wsdl:input message="sb:load_dataRequest"></wsdl:input>
+    	<wsdl:output message="sb:load_dataResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="store_data">
+    	<wsdl:documentation>store the encrypted data package</wsdl:documentation>
+    	<wsdl:input message="sb:store_dataRequest"></wsdl:input>
+    	<wsdl:output message="sb:store_dataResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="load_messages">
+    	<wsdl:documentation>load messages that were received by server</wsdl:documentation>
+    	<wsdl:input message="sb:load_messagesRequest"></wsdl:input>
+    	<wsdl:output message="sb:load_messagesResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="send_message">
+    	<wsdl:documentation>send message to receiver</wsdl:documentation>
+    	<wsdl:input message="sb:send_messageRequest"></wsdl:input>
+    	<wsdl:output message="sb:send_messageResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="receive_message">
+    	<wsdl:documentation>receive message from sender</wsdl:documentation>
+    	<wsdl:input message="sb:receive_messageRequest"></wsdl:input>
+    	<wsdl:output message="sb:receive_messageResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="starbaseSOAP" type="sb:starbase">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="default">
+      <soap:operation soapAction="http://www.starba.se/api/default"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="starbase">
+    <wsdl:port binding="sb:starbaseSOAP" name="starbaseSOAP">
+      <soap:address location="http://www.starba.se/api"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

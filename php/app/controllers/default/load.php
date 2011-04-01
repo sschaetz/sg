@@ -1,6 +1,6 @@
 <?php
 
-$this->requiresLoggedIn(1, 'loggin required to load data');
+$this->requiresLoggedIn(1, 'login required to load data');
 $this->activateJsonResponse();
 
 $data = $db->getValue($conf->data_block_name);
