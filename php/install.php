@@ -14,6 +14,7 @@
   if(!isset($_GET['url']) || !ctype_alnum($_GET['url'])) 
     die(json_encode(array('status' => 1)));
   $url = $_GET['url'];
+  
   // and that it does not exist yet
   if(is_dir($conf->full_install_directory.$url)) 
     die(json_encode(array('status' => 2)));
@@ -46,7 +47,7 @@
   copy('app/db.sql3', $conf->full_install_directory.$url.'/db.sql3');
   chmod($conf->full_install_directory.$url.'/db.sql3', 0666);
 
-  // and written to the database
+  // and writte to the database
   $db = new SQLite3($conf->full_install_directory.$url.'/db.sql3', 
     SQLITE3_OPEN_READWRITE);
 

@@ -136,8 +136,8 @@
      * 
      * Analyzes the controller (c) and action (a) get parameters and tries
      * to call this controller-action combination. It checks if it exists
-     * by evaluating if the controller folder and action.php file inside exist.
-     * It calls the action simply by including the file.
+     * by evaluating if the <controller> folder and <action>.php file inside 
+     * exist. It calls the action simply by including the file.
      * It makes the $db and $sh variables available to the action (database 
      * handler and session handler).
      *
@@ -145,10 +145,11 @@
      * controller is used.
      *
      * If the controller-action combination does not exist it calls the default
-     * controller and action (can specified in the configuration).
+     * controller and action (can be specified in the configuration).
      *
      * This method makes all private members of the dispatch class available to
-     * the action.
+     * the action because the <action>.php file is directly included in this
+     * function.
      *
      * @returns nothing
      */
